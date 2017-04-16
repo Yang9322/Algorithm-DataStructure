@@ -8,24 +8,6 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
-
-@end
-
-@implementation ViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-}
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-
 struct ListNode {
     int value;
     struct ListNode *next;
@@ -37,7 +19,70 @@ struct BinaryTreeNode {
     struct BinaryTreeNode *pright;
 };
 
-void DeleteNode(struct ListNode **headNode,struct ListNode *toBeDeletedNode){
+@interface ViewController ()
+
+@end
+
+@implementation ViewController {
+    struct BinaryTreeNode *root;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    [self generateBinaryTree];
+    
+    printBinaryTreeFromTopToBottom(root);
+    
+}
+
+
+- (void)generateBinaryTree {
+    struct BinaryTreeNode *node6 = calloc(1, sizeof(struct BinaryTreeNode));
+    node6->value = 6;
+    node6->pleft = NULL;
+    node6->pright = NULL;
+    
+    struct BinaryTreeNode *node5 = calloc(1, sizeof(struct BinaryTreeNode));
+    node5->value = 5;
+    node5->pleft = NULL;
+    node5->pright = NULL;
+    
+    struct BinaryTreeNode *node4 = calloc(1, sizeof(struct BinaryTreeNode));
+    node4->value = 4;
+    node4->pleft = NULL;
+    node4->pright = NULL;
+    
+    struct BinaryTreeNode *node3 = calloc(1, sizeof(struct BinaryTreeNode));
+    node3->value = 3;
+    node3->pleft = NULL;
+    node3->pright = NULL;
+    
+    struct BinaryTreeNode *node2 = calloc(1, sizeof(struct BinaryTreeNode));
+    node2->value = 2;
+    node2->pleft = node5;
+    node2->pright = node6;
+    
+    struct BinaryTreeNode *node1 = calloc(1, sizeof(struct BinaryTreeNode));
+    node1->value = 1;
+    node1->pleft = node3;
+    node1->pright = node4;
+    
+    root = calloc(1, sizeof(struct BinaryTreeNode));
+    root->value = 0;
+    root->pleft = node1;
+    root->pright = node2;
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+
+
+void DeleteNode (struct ListNode **headNode,struct ListNode *toBeDeletedNode) {
     if (!headNode || !toBeDeletedNode) {
         return;
     }
@@ -68,7 +113,7 @@ void DeleteNode(struct ListNode **headNode,struct ListNode *toBeDeletedNode){
     }
 }
 
-void recorderOddEven(int *pData,int length,bool (*func) (int)){
+void recorderOddEven (int *pData,int length,bool (*func) (int)) {
     if (pData == NULL || length == 0) {
         return;
     }
@@ -96,7 +141,7 @@ bool isEven(int n){
 }
 
 //发现倒数第N个链表
-struct ListNode * findNthTotail(struct ListNode * plistHead,unsigned int k){
+struct ListNode * findNthTotail (struct ListNode * plistHead,unsigned int k) {
     
     if (plistHead == NULL || k <= 0 ) {
         return NULL;
@@ -124,7 +169,7 @@ struct ListNode * findNthTotail(struct ListNode * plistHead,unsigned int k){
 }
 
 //反转链表
-struct ListNode * reverseList(struct ListNode *phead){
+struct ListNode * reverseList (struct ListNode *phead) {
     if (phead == NULL) {
         return NULL;
     }
@@ -152,7 +197,7 @@ struct ListNode * reverseList(struct ListNode *phead){
 }
 
 //合并顺序排列的链表
-struct ListNode *merge(struct ListNode *phead1,struct ListNode *phead2) {
+struct ListNode *merge (struct ListNode *phead1,struct ListNode *phead2) {
     if (phead1 == NULL) {
         return phead2;
     }
@@ -172,7 +217,8 @@ struct ListNode *merge(struct ListNode *phead1,struct ListNode *phead2) {
     return pMergeHead;
 }
 
-bool hasSubtree(struct BinaryTreeNode *pRoot1,struct BinaryTreeNode *pRoot2) {
+//是否有子树
+bool hasSubtree (struct BinaryTreeNode *pRoot1,struct BinaryTreeNode *pRoot2) {
     bool result = false;
     if (pRoot1 != NULL && pRoot2 != NULL) {
         if (pRoot1 -> value == pRoot2 -> value) {
@@ -188,7 +234,7 @@ bool hasSubtree(struct BinaryTreeNode *pRoot1,struct BinaryTreeNode *pRoot2) {
     return result;
 }
 
-bool doesTree1HaveTree2(struct BinaryTreeNode *pRoot1,struct BinaryTreeNode *pRoot2){
+bool doesTree1HaveTree2 (struct BinaryTreeNode *pRoot1,struct BinaryTreeNode *pRoot2) {
     if (pRoot2 == NULL) {
         return true;
     }
@@ -201,5 +247,101 @@ bool doesTree1HaveTree2(struct BinaryTreeNode *pRoot1,struct BinaryTreeNode *pRo
     return doesTree1HaveTree2(pRoot1->pleft, pRoot2->pleft) && doesTree1HaveTree2(pRoot1->pright, pRoot2->pright);
 }
 
+//镜像二叉树
+void mirrorRecursively (struct BinaryTreeNode *pRoot) {
+    if (pRoot == NULL) {
+        return;
+    }
+    if (pRoot->pleft == NULL && pRoot->pright == NULL) {
+        return;
+    }
+    
+    struct BinaryTreeNode *tmpNode = pRoot->pleft;
+    pRoot->pleft = pRoot->pright;
+    pRoot->pright = tmpNode;
+    if (pRoot->pleft) {
+        mirrorRecursively(pRoot->pleft);
+    }
+    if (pRoot->pright) {
+        mirrorRecursively(pRoot->pright);
+    }
+}
+
+// 打印矩阵
+void printMatrixClockWisely (int **numbers,int columns,int rows) {
+    if (numbers == NULL || columns <= 0 || rows <= 0) {
+        return;
+    }
+    
+    int start = 0;
+    while (columns > start * 2 && rows > start * 2) {
+        
+        printMatrixInCircle (numbers, columns, rows,start);
+        ++start;
+    }
+    
+    
+}
+
+void printMatrixInCircle (int **numbers,int columns,int rows,int start) {
+   
+    int endX = columns - start - 1;
+    int endY = rows - start - 1;
+    
+    for (int i = start; i <= endX; i++) {
+        int number = numbers[start][i];
+        printf("%d", number);
+    }
+    
+    if (start < endY)
+    {
+        for (int i = start + 1; i <= endY; i++) {
+            int number = numbers[i][endX];
+            printf("%d", number);
+        }
+        
+        if (start < endX)
+        {
+            for (int i = endX - 1; i >= start; i--) {
+                int number = numbers[i][endX];
+                printf("%d",number);
+            }
+            
+            if (start < endX - 1)
+            {
+                
+                for (int i = endY - 1; i >= start + 1; i--) {
+                    int number = numbers[i][start];
+                    printf("%d",number);
+                }
+            }
+        }
+    }
+    
+}
+
+
+void printBinaryTreeFromTopToBottom (struct BinaryTreeNode *pRoot) {
+    if (!pRoot) {
+        return;
+    }
+    
+    NSMutableArray *queue = @[].mutableCopy;
+    [queue addObject:[NSValue valueWithPointer:pRoot]];
+    
+    while (queue.count) {
+        NSValue *pointer = [queue objectAtIndex:0];
+        [queue removeObjectAtIndex:0];
+        struct BinaryTreeNode *node = pointer.pointerValue;
+        printf("%d\n",node->value);
+        
+        if (node->pleft) {
+            [queue addObject:[NSValue valueWithPointer:node->pleft]];
+        }
+        if (node->pright) {
+            [queue addObject:[NSValue valueWithPointer:node->pright]];
+        }
+    }
+}
 
 @end
