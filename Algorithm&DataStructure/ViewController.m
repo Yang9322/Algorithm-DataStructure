@@ -29,7 +29,12 @@ struct BinaryTreeNode {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    int a[] = {100,50,25,10,30,65,70,55,120,110,130};
+    int b[] = {5,7,6,9,11,10,8};
+    bool result = verifySequenceOfTree(a, 11);
+    bool result2 = verifySequenceOfBST(b, 7);
+    
     [self generateBinaryTree];
     
     printBinaryTreeFromTopToBottom(root);
@@ -333,7 +338,7 @@ void printBinaryTreeFromTopToBottom (struct BinaryTreeNode *pRoot) {
         NSValue *pointer = [queue objectAtIndex:0];
         [queue removeObjectAtIndex:0];
         struct BinaryTreeNode *node = pointer.pointerValue;
-        printf("%d\n",node->value);
+//        printf("%d\n",node->value);
         
         if (node->pleft) {
             [queue addObject:[NSValue valueWithPointer:node->pleft]];
@@ -342,6 +347,73 @@ void printBinaryTreeFromTopToBottom (struct BinaryTreeNode *pRoot) {
             [queue addObject:[NSValue valueWithPointer:node->pright]];
         }
     }
+}
+
+bool verifySequenceOfBST(int sequence[], int length) {
+    if (sequence == NULL || length <= 0) {
+        return NO;
+    }
+    
+    int root = sequence[length - 1];
+    int i = 0;
+    for (i = 0; i<length - 1; i++) {
+        if (sequence[i] > root) {
+            break;
+        }
+    }
+    
+    for (int j = i; j < length - 1; j++) {
+        if (sequence[j] < root) {
+            return NO;
+        }
+    }
+    
+    bool left = true;
+    if (i > 0) {
+        left = verifySequenceOfBST(sequence, i);
+    }
+    
+    bool right = true;
+    if (i < length - 1) {
+        right = verifySequenceOfBST(sequence + i, length - i - 1);
+    }
+    
+    
+    
+    return left && right;
+}
+
+bool verifySequenceOfTree(int sequence[],int length) {
+    if (sequence == NULL || length <= 0) {
+        return NO;
+    }
+    
+    int root = sequence[0];
+    int i = 1;
+    for (; i < length; i++) {
+        if (sequence[i] > root) {
+            break;
+        }
+    }
+    
+    int j = i;
+    for (; j < length; j++) {
+        if (sequence[j] < root) {
+            return false;
+        }
+    }
+    
+    bool left = true;
+    if (i > 1) {
+        left = verifySequenceOfTree(sequence+1, i-1);
+    }
+    
+    bool right = true;
+    if (i < length) {
+        right = verifySequenceOfTree(sequence + i, length - i);
+    }
+    
+    return left && right;
 }
 
 @end
