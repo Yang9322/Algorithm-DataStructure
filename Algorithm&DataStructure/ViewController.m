@@ -82,14 +82,6 @@ struct BinaryTreeNode {
     root->pright = node2;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-
-
-
 void DeleteNode (struct ListNode **headNode,struct ListNode *toBeDeletedNode) {
     if (!headNode || !toBeDeletedNode) {
         return;
@@ -327,7 +319,6 @@ void printMatrixInCircle (int **numbers,int columns,int rows,int start) {
     }
     
 }
-
 
 void printBinaryTreeFromTopToBottom (struct BinaryTreeNode *pRoot) {
     if (!pRoot) {
