@@ -25,11 +25,13 @@ struct BinaryTreeNode {
 
 @implementation ViewController {
     struct BinaryTreeNode *root;
+    NSMutableArray * _values;
+    int _sumValue;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    _values = @[].mutableCopy;
     int a[] = {100,50,25,10,30,65,70,55,120,110,130};
     int b[] = {5,7,6,9,11,10,8};
     bool result = verifySequenceOfTree(a, 11);
@@ -39,6 +41,7 @@ struct BinaryTreeNode {
     
     printBinaryTreeFromTopToBottom(root);
     
+    [self findPath:root goal:8];
 }
 
 
@@ -349,6 +352,7 @@ void printBinaryTreeFromTopToBottom (struct BinaryTreeNode *pRoot) {
     }
 }
 
+//后序二叉树
 bool verifySequenceOfBST(int sequence[], int length) {
     if (sequence == NULL || length <= 0) {
         return NO;
@@ -383,6 +387,7 @@ bool verifySequenceOfBST(int sequence[], int length) {
     return left && right;
 }
 
+//前序二叉树
 bool verifySequenceOfTree(int sequence[],int length) {
     if (sequence == NULL || length <= 0) {
         return NO;
@@ -415,5 +420,36 @@ bool verifySequenceOfTree(int sequence[],int length) {
     
     return left && right;
 }
+
+//路径搜索
+- (void)findPath:(struct BinaryTreeNode *)pRoot goal:(int)goal {
+        if (!pRoot) {
+            return;
+        }
+        _sumValue = 0;
+    [self recursivelyFindWithRoot:pRoot goal:goal];
+}
+
+- (void)recursivelyFindWithRoot:(struct BinaryTreeNode *)pRoot goal:(int)goal{
+    _sumValue += pRoot -> value;
+    int intValue = pRoot -> value;
+    [_values addObject:@(intValue)];
+    bool isLeaf = pRoot ->pleft == NULL && pRoot ->pright == NULL;
+    if (_sumValue == goal && isLeaf) {
+        for (NSNumber *number in _values) {
+            NSLog(@"\nbegin---\n%@\n---end",number );
+        }
+    }
+    if (pRoot -> pleft) {
+        [self recursivelyFindWithRoot:pRoot -> pleft goal:goal];
+    }
+    if (pRoot -> pright) {
+        [self recursivelyFindWithRoot:pRoot -> pright goal:goal];
+    }
+    NSNumber *lastNumer = [_values lastObject];
+    _sumValue -= [lastNumer intValue];
+    [_values removeLastObject];
+}
+
 
 @end
