@@ -7,7 +7,6 @@
 //
 
 #import "ViewController.h"
-
 struct ListNode {
     int value;
     struct ListNode *next;
@@ -17,6 +16,12 @@ struct BinaryTreeNode {
     int value;
     struct BinaryTreeNode *pleft;
     struct BinaryTreeNode *pright;
+};
+
+struct ComplexListNode {
+    int value;
+    struct ComplexListNode *next;
+    struct ComplexListNode *pSibing;
 };
 
 @interface ViewController ()
@@ -32,17 +37,52 @@ struct BinaryTreeNode {
 - (void)viewDidLoad {
     [super viewDidLoad];
     _values = @[].mutableCopy;
-    int a[] = {100,50,25,10,30,65,70,55,120,110,130};
-    int b[] = {5,7,6,9,11,10,8};
-    bool result = verifySequenceOfTree(a, 11);
-    bool result2 = verifySequenceOfBST(b, 7);
+//    int a[] = {100,50,25,10,30,65,70,55,120,110,130};
+//    int b[] = {5,7,6,9,11,10,8};
+//    bool result = verifySequenceOfTree(a, 11);
+//    bool result2 = verifySequenceOfBST(b, 7);
+//    
+//    [self generateBinaryTree];
+//    
+//    printBinaryTreeFromTopToBottom(root);
+//    
+//    [self findPath:root goal:8];
+    char str[] = "abc";
     
-    [self generateBinaryTree];
+    permutate(str);
     
-    printBinaryTreeFromTopToBottom(root);
+    NSArray *array  = @[@(7),@(3),@(11),@(1),@(5), @(9),@(13)];
+    NSArray *a = [self findMinNumbers:array limit:5];
     
-    [self findPath:root goal:8];
 }
+
+- (NSUInteger)binarySearch:(NSArray *)numbers baseLine:(int)baseline {
+    NSInteger min = 0;
+    NSInteger max = numbers.count - 1;
+    NSInteger mid = ceilf((min + max) / 2.f);
+    while (mid > min && mid < max) {
+        NSNumber *midNum = numbers[mid];
+        if (midNum.integerValue <= baseline) {
+            NSNumber *nextnumber = numbers[mid+1];
+            if (nextnumber.integerValue > baseline) {
+                mid++;
+                break;
+            }
+            min = mid;
+        }else{
+            max = mid;
+        }
+        mid = ceilf((CGFloat)(min + max) / 2.f);
+    }
+    return mid;
+}
+
+
+//
+//void testStackWithParam1(int a, int b) {
+//    printf("%p\n",a);
+//    printf("%p",b);
+//}
 
 
 - (void)generateBinaryTree {
@@ -425,7 +465,7 @@ bool verifySequenceOfTree(int sequence[],int length) {
     _sumValue += pRoot -> value;
     int intValue = pRoot -> value;
     [_values addObject:@(intValue)];
-    bool isLeaf = pRoot ->pleft == NULL && pRoot ->pright == NULL;
+    bool isLeaf = pRoot -> pleft == NULL && pRoot -> pright == NULL;
     if (_sumValue == goal && isLeaf) {
         for (NSNumber *number in _values) {
             NSLog(@"\nbegin---\n%@\n---end",number );
@@ -442,5 +482,177 @@ bool verifySequenceOfTree(int sequence[],int length) {
     [_values removeLastObject];
 }
 
+//复杂链表的复制
+void cloneNode(struct ComplexListNode *pHead) {
+    struct ComplexListNode *pNode = pHead;
+    while (pNode) {
+        struct ComplexListNode *pCloned = calloc(1, sizeof(struct ComplexListNode));
+        pCloned->value = pNode->value;
+        pCloned->next = pNode->next;
+        pCloned->pSibing = NULL;
+        pNode->next = pCloned;
+        pNode = pCloned->next;
+    }
+}
+
+void connectionSiblingNodes(struct ComplexListNode *pHead) {
+    struct ComplexListNode *pNode = pHead;
+    while (pNode) {
+        struct ComplexListNode *pCloned = pNode->next;
+        if (pNode->pSibing) {
+            pCloned->pSibing = pNode->pSibing->next;
+        }
+        pNode = pCloned->next;
+    }
+}
+
+struct ComplexListNode *reconnectNodes(struct ComplexListNode * pHead) {
+    struct ComplexListNode *pNode = pHead;
+    struct ComplexListNode *pClonedHead = NULL;
+    struct ComplexListNode *pClonedNode = NULL;
+    if (pNode) {
+        pClonedHead = pClonedNode = pNode->next;
+        pNode->next = pClonedNode->next;
+        pNode = pNode->next;
+    }
+    while (pNode) {
+        pClonedNode->next = pNode->next;
+        pClonedNode=pClonedNode->next;
+        pNode->next = pClonedNode->next;
+        pNode = pNode->next;
+    }
+    return pClonedHead;
+}
+
+struct ComplexListNode *clone(struct ComplexListNode * pHead) {
+    cloneNode(pHead);
+    connectionSiblingNodes(pHead);
+    return reconnectNodes(pHead);
+}
+
+//二叉树转换为双向链表
+struct BinaryTreeNode *convert(struct BinaryTreeNode *pRootOfTree) {
+    struct BinaryTreeNode *pLastNodeInList = NULL;
+    convertNode(pRootOfTree, &pLastNodeInList);
+    struct BinaryTreeNode *pHeadOfList = pLastNodeInList;
+    while (pHeadOfList !=NULL && pHeadOfList -> pleft) {
+        pHeadOfList = pHeadOfList -> pleft;
+    }
+    return pHeadOfList;
+}
+
+void convertNode(struct BinaryTreeNode *pNode, struct BinaryTreeNode **pLastNodeInList) {
+    if (!pNode) {
+        return;
+    }
+    struct BinaryTreeNode *pCurrent = pNode;
+    if (pCurrent->pleft!=NULL) {
+        convertNode(pCurrent->pleft, pLastNodeInList);
+    }
+    pCurrent->pleft = *pLastNodeInList;
+    
+    if (*pLastNodeInList != NULL) {
+        (*pLastNodeInList)->pright = pCurrent;
+    }
+    
+    *pLastNodeInList = pCurrent;
+     
+    if (pCurrent->pright) {
+        convertNode(pCurrent->pright, pLastNodeInList);
+    }
+    
+}
+
+void recursivelyPermutate(char *pStr,char *pBegin) {
+    if (*pBegin == '\0') {
+        printf("%s\n",pStr);
+    }
+    else {
+        for (char *pCh = pBegin; *pCh != '\0'; ++pCh) {
+            char temp = *pCh;
+            *pCh = *pBegin;
+            *pBegin = temp;
+            recursivelyPermutate(pStr, pBegin+1);
+            temp = *pCh;
+            *pCh = *pBegin;
+            *pBegin = temp;
+        }
+    }
+}
+
+void permutate(char *pStr) {
+    if (pStr == NULL) {
+        return;
+    }
+    recursivelyPermutate(pStr, pStr);
+}
+
+
+//最小的k个数
+- (NSArray *)findMinNumbers:(NSArray *)numbers limit:(int)limit {
+    if (numbers.count <= 0 || !numbers || limit <= 0) {
+        return nil;
+    }
+    NSNumber *minNumber = numbers[0];
+    NSMutableArray *output = @[].mutableCopy;
+    for (int i = 0; i < numbers.count; i++) {
+        NSNumber *number = numbers[i];
+        if (i > limit - 1) {
+            if (number < minNumber) {
+                [self addNumber:number InArray:output];
+                [output removeLastObject];
+                minNumber = [output lastObject];
+            }
+        }
+        else {
+            minNumber = minNumber > number ? minNumber : number;
+            [self addNumber:number InArray:output];
+        }
+    }
+    return output.copy;
+}
+
+
+- (void)addNumber:(NSNumber *)number InArray:(NSMutableArray *)output {
+    if (output.count) {
+        NSNumber *firstNum = output[0];
+        NSNumber *lastNum = [output lastObject];
+        if (firstNum > number) {
+            [output insertObject:number atIndex:0];
+            return;
+        }
+        if (number > lastNum) {
+            [output addObject:number];
+            return;
+        }
+    }
+    int index = [self binarySearchNumber:number min:0 max:(int)output.count - 1 numbers:output];
+    [output insertObject:number atIndex:index];
+}
+
+- (int)binarySearchNumber:(NSNumber *)number min:(int)min max:(int)max numbers:(NSMutableArray *)output{
+    if (max < 0) {
+        return 0;
+    }
+    else {
+        int mid = ceilf((CGFloat)(min + max) / 2.f);
+        while (mid > min && mid < max ) {
+            NSNumber *middleNum = output[mid];
+            if (number >= middleNum) {
+                NSNumber *nextnumber = output[mid+1];
+                if (number < nextnumber) {
+                    mid++;
+                    break;
+                }
+                min = mid;
+            }
+            else {
+                max = mid;
+            }
+            mid = ceilf((CGFloat)(min + max) / 2.f);
+        }
+        return mid;
+    }
+}
 
 @end
